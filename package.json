@@ -10,6 +10,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "react": "17.0.1",
     "react-native": "0.64.0"
   },
@@ -21,7 +23,8 @@
     "@types/react-native": "^0.64.0",
     "@types/react-test-renderer": "^16.9.2",
     "babel-jest": "^26.6.3",
-    "eslint": "^7.14.0",
+    "eslint": "^5.16.0",
+    "eslint-import-resolver-typescript": "^2.4.0",
     "jest": "^26.6.3",
     "metro-react-native-babel-preset": "^0.64.0",
     "react-test-renderer": "17.0.1",
