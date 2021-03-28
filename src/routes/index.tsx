@@ -11,7 +11,7 @@ const AuthRoutes: React.FC = () => (
     screenOptions={{
       // pra sumir com o header e estilizando cada uma das rotas
       headerShown: false,
-      cardStyle: { backgroundColor: "#312e38" },
+      cardStyle: { backgroundColor: "#111111" },
     }}
   >
     <Auth.Screen name="SignIn" component={SignIn} />
