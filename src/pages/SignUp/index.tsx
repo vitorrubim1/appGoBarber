@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useRef } from "react";
 import {
   Image,
   View,
@@ -8,6 +8,9 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
+
+import { Form } from "@unform/mobile";
+import { FormHandles } from "@unform/core"; // métodos disponíveis para manipular a referência do formulário de maneira direta
 
 import Input from "../../components/Input";
 import Button from "../../components/Button";
@@ -23,6 +26,11 @@ import {
 
 const SignUp: React.FC = () => {
   const navigation = useNavigation();
+  const formRef = useRef<FormHandles>(null);
+
+  const handleSignUp = useCallback((data: object) => {
+    console.log(data);
+  }, []);
 
   return (
     <>
@@ -42,11 +50,27 @@ const SignUp: React.FC = () => {
               <Title>Crie sua conta</Title>
             </View>
 
-            <Input name="name" icon="user" placeholder="Digite seu nome" />
-            <Input name="email" icon="mail" placeholder="Digite seu email" />
-            <Input name="password" icon="lock" placeholder="Digite sua senha" />
+            <Form
+              onSubmit={handleSignUp}
+              ref={formRef}
+              style={{ width: "100%" }}
+            >
+              <Input name="name" icon="user" placeholder="Digite seu nome" />
+              <Input name="email" icon="mail" placeholder="Digite seu email" />
+              <Input
+                name="password"
+                icon="lock"
+                placeholder="Digite sua senha"
+              />
+            </Form>
 
-            <Button onPress={() => {}}>Entrar</Button>
+            <Button
+              onPress={() => {
+                formRef.current?.submitForm(); /*não tem como por type submit, então tenho que disparar com a o submit com a referência do formulário*/
+              }}
+            >
+              Entrar
+            </Button>
           </Container>
         </ScrollView>
       </KeyboardAvoidingView>
