@@ -5,6 +5,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
@@ -29,6 +30,7 @@ import {
 const SignIn: React.FC = () => {
   const navigation = useNavigation();
   const formRef = useRef<FormHandles>(null);
+  const passwordInputRef = useRef<TextInput>(null); // para que ao prosseguir o input de email o de password tenha autofoco
 
   const handleSignIn = useCallback((data: object) => {
     console.log(data);
@@ -57,11 +59,29 @@ const SignIn: React.FC = () => {
               ref={formRef}
               style={{ width: "100%" }}
             >
-              <Input name="email" icon="mail" placeholder="Digite seu email" />
               <Input
+                autoCorrect={false}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                name="email"
+                icon="mail"
+                placeholder="Digite seu email"
+                returnKeyType="next" // pro teclado ter a opção visual de prosseguir pro outro input abaixo
+                onSubmitEditing={() => {
+                  passwordInputRef.current?.focus(); //para do foco no input de senha
+                }}
+              />
+              <Input
+                ref={passwordInputRef}
                 name="password"
                 icon="lock"
                 placeholder="Digite sua senha"
+                secureTextEntry //campo do tipo password
+                returnKeyType="send" //pro teclado ter a opção visual de "submitar"
+                onSubmitEditing={() => {
+                  // pra submitar de fato o form
+                  formRef.current?.submitForm();
+                }}
               />
 
               <Button

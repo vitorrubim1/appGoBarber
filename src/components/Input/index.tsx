@@ -1,4 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from "react"; //useImperativeHandle: server para passarmos informações de um componente filho para um componente pai
 import { TextInputProps } from "react-native";
 import { useField } from "@unform/core";
 
@@ -13,11 +18,26 @@ interface InputValueReference {
   value: string;
 }
 
-const Input: React.FC<InputProps> = ({ name, icon, ...rest }) => {
+interface InputRef {
+  focus(): void;
+}
+
+const Input: React.ForwardRefRenderFunction<InputRef, InputProps> = (
+  { name, icon, ...rest },
+  ref
+) => {
+  // ForwardRefRenderFunction: quando preciso receber "ref", como parametro, já que a tipagem sempre sera "any" com React.FC
   const inputElementRef = useRef<any>(null);
 
   const { defaultValue = "", registerField, fieldName, error } = useField(name); //name dos parâmetros é o que vem do componente que usa o input, da interface InputProps
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue }); // que vai ser vazio por início
+
+  useImperativeHandle(ref, () => ({
+    focus() {
+      // primeiro parâmetro é oq eu recebo do componente filho, e a segunda é oq quero fazer
+      inputElementRef.current.focus(); // pego a referência padrão desse componente e do foco
+    },
+  }));
 
   useEffect(() => {
     registerField({
@@ -33,7 +53,7 @@ const Input: React.FC<InputProps> = ({ name, icon, ...rest }) => {
       clearValue() {
         inputValueRef.current.value = "";
         inputElementRef.current.clear();
-      }
+      },
     });
   }, [registerField, fieldName]);
 
@@ -55,4 +75,4 @@ const Input: React.FC<InputProps> = ({ name, icon, ...rest }) => {
   );
 };
 
-export default Input;
+export default forwardRef(Input); //como recebo ref por parâmetro, tenho q exportar assim;

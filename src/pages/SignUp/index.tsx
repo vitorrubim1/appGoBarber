@@ -5,6 +5,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
@@ -26,7 +27,10 @@ import {
 
 const SignUp: React.FC = () => {
   const navigation = useNavigation();
+
   const formRef = useRef<FormHandles>(null);
+  const emailInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
 
   const handleSignUp = useCallback((data: object) => {
     console.log(data);
@@ -55,12 +59,41 @@ const SignUp: React.FC = () => {
               ref={formRef}
               style={{ width: "100%" }}
             >
-              <Input name="name" icon="user" placeholder="Digite seu nome" />
-              <Input name="email" icon="mail" placeholder="Digite seu email" />
               <Input
+                autoCapitalize="words" // nomes próprios em letra maiuscula
+                returnKeyType="next" // pro teclado ter a opção visual de prosseguir pro outro input abaixo
+                name="name"
+                icon="user"
+                placeholder="Digite seu nome"
+                onSubmitEditing={() => {
+                  emailInputRef.current?.focus();
+                }}
+              />
+              <Input
+                ref={emailInputRef}
+                autoCorrect={false}
+                autoCapitalize="none"
+                returnKeyType="next" // pro teclado ter a opção visual de prosseguir pro outro input abaixo
+                keyboardType="email-address"
+                name="email"
+                icon="mail"
+                placeholder="Digite seu email"
+                onSubmitEditing={() => {
+                  passwordInputRef.current?.focus();
+                }}
+              />
+              <Input
+                ref={passwordInputRef}
+                secureTextEntry //campo do tipo password
+                textContentType="newPassword" //para não tentar gerar uma senha automática no ios
+                returnKeyType="send" //pro teclado ter a opção visual de "submitar"
                 name="password"
                 icon="lock"
                 placeholder="Digite sua senha"
+                onSubmitEditing={() => {
+                  // pra submitar de fato o form
+                  formRef.current?.submitForm();
+                }}
               />
             </Form>
 
