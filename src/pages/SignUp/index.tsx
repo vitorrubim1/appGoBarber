@@ -6,9 +6,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
+import * as Yup from "yup";
+
+import getValidationErrors from "../../utils/getValidationsErrors";
 
 import { Form } from "@unform/mobile";
 import { FormHandles } from "@unform/core"; // métodos disponíveis para manipular a referência do formulário de maneira direta
@@ -25,6 +29,12 @@ import {
   BackToSignInText,
 } from "./styles";
 
+interface SignUpFormData {
+  name: string;
+  email: string;
+  password: string;
+}
+
 const SignUp: React.FC = () => {
   const navigation = useNavigation();
 
@@ -32,8 +42,39 @@ const SignUp: React.FC = () => {
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSignUp = useCallback((data: object) => {
-    console.log(data);
+  const handleSignUp = useCallback(async (data: SignUpFormData) => {
+    try {
+      formRef.current?.setErrors({}); // zerando os erros
+
+      const schema = Yup.object().shape({
+        name: Yup.string().required("Nome obrigatório"),
+        email: Yup.string()
+          .required("Email obrigatório")
+          .email("Digite um email válido"),
+        password: Yup.string().min(6, "Mínimo 6 digitos "),
+      });
+
+      await schema.validate(data, {
+        abortEarly: false, // pra retornar todos os erros de uma vez
+      }); // dados q recebi do input
+
+      // criando um user, redirecionando-o, e mostrando um toast alert
+      // await api.post("users", data);
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        // verifico se o erro que deu é uma instância do Yup
+        const errors = getValidationErrors(error);
+        formRef.current?.setErrors(errors); // formRef: referencia do formulario. current: valor das informações
+
+        return; // para não executar o toast caso seja erro de validação
+      }
+
+      // mostrando um alert de sucesso
+      Alert.alert(
+        "Erro no cadastro.",
+        "Ocorreu um erro ao fazer cadastro, tente novamente."
+      );
+    }
   }, []);
 
   return (
