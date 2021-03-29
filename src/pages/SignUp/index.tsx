@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 import * as Yup from "yup";
 
+import api from "../../services/api";
 import getValidationErrors from "../../utils/getValidationsErrors";
 
 import { Form } from "@unform/mobile";
@@ -58,8 +59,13 @@ const SignUp: React.FC = () => {
         abortEarly: false, // pra retornar todos os erros de uma vez
       }); // dados q recebi do input
 
-      // criando um user, redirecionando-o, e mostrando um toast alert
-      // await api.post("users", data);
+      // criando um user, redirecionando-o, e mostrando um alert
+      await api.post("users", data);
+      Alert.alert(
+        "Cadastro realizado com sucesso!",
+        "Você já pode fazer login na aplicação"
+      );
+      navigation.goBack();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         // verifico se o erro que deu é uma instância do Yup
