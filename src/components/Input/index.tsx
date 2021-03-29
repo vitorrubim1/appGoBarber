@@ -1,9 +1,11 @@
 import React, {
+  useState,
   useEffect,
+  useCallback,
   useRef,
   useImperativeHandle,
   forwardRef,
-} from "react"; //useImperativeHandle: server para passarmos informações de um componente filho para um componente pai
+} from "react"; //useImperativeHandle: serve para passarmos informações de um componente filho para um componente pai
 import { TextInputProps } from "react-native";
 import { useField } from "@unform/core";
 
@@ -32,6 +34,19 @@ const Input: React.ForwardRefRenderFunction<InputRef, InputProps> = (
   const { defaultValue = "", registerField, fieldName, error } = useField(name); //name dos parâmetros é o que vem do componente que usa o input, da interface InputProps
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue }); // que vai ser vazio por início
 
+  const [isFocused, setIsfocused] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
+
+  const handleInputFocus = useCallback(() => {
+    setIsfocused(true);
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    setIsfocused(false);
+
+    setIsFilled(!!inputValueRef.current.value); // vendo se o input tem algum valor preenchido, se tiver true, se não false
+  }, []);
+
   useImperativeHandle(ref, () => ({
     focus() {
       // primeiro parâmetro é oq eu recebo do componente filho, e a segunda é oq quero fazer
@@ -58,14 +73,20 @@ const Input: React.ForwardRefRenderFunction<InputRef, InputProps> = (
   }, [registerField, fieldName]);
 
   return (
-    <Container>
-      <Icon name={icon} size={20} color="#666360" />
+    <Container isFocused={isFocused}>
+      <Icon
+        name={icon}
+        size={20}
+        color={isFocused || isFilled ? "#ff9000" : "#666360"}
+      />
 
       <TextInput
         ref={inputElementRef}
         keyboardAppearance="dark"
         placeholderTextColor="#666360"
         defaultValue={defaultValue}
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
         onChangeText={(value) => {
           inputValueRef.current.value = value; /*o texto que estiver sendo digitado no input, será a informação final do inputValueRef.value*/
         }}
