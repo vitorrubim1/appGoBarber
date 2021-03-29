@@ -43,45 +43,48 @@ const SignUp: React.FC = () => {
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSignUp = useCallback(async (data: SignUpFormData) => {
-    try {
-      formRef.current?.setErrors({}); // zerando os erros
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({}); // zerando os erros
 
-      const schema = Yup.object().shape({
-        name: Yup.string().required("Nome obrigatório"),
-        email: Yup.string()
-          .required("Email obrigatório")
-          .email("Digite um email válido"),
-        password: Yup.string().min(6, "Mínimo 6 digitos "),
-      });
+        const schema = Yup.object().shape({
+          name: Yup.string().required("Nome obrigatório"),
+          email: Yup.string()
+            .required("Email obrigatório")
+            .email("Digite um email válido"),
+          password: Yup.string().min(6, "Mínimo 6 digitos "),
+        });
 
-      await schema.validate(data, {
-        abortEarly: false, // pra retornar todos os erros de uma vez
-      }); // dados q recebi do input
+        await schema.validate(data, {
+          abortEarly: false, // pra retornar todos os erros de uma vez
+        }); // dados q recebi do input
 
-      // criando um user, redirecionando-o, e mostrando um alert
-      await api.post("users", data);
-      Alert.alert(
-        "Cadastro realizado com sucesso!",
-        "Você já pode fazer login na aplicação"
-      );
-      navigation.goBack();
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        // verifico se o erro que deu é uma instância do Yup
-        const errors = getValidationErrors(error);
-        formRef.current?.setErrors(errors); // formRef: referencia do formulario. current: valor das informações
+        // criando um user, redirecionando-o, e mostrando um alert
+        await api.post("users", data);
+        Alert.alert(
+          "Cadastro realizado com sucesso!",
+          "Você já pode fazer login na aplicação"
+        );
+        navigation.goBack();
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          // verifico se o erro que deu é uma instância do Yup
+          const errors = getValidationErrors(error);
+          formRef.current?.setErrors(errors); // formRef: referencia do formulario. current: valor das informações
 
-        return; // para não executar o toast caso seja erro de validação
+          return; // para não executar o toast caso seja erro de validação
+        }
+
+        // mostrando um alert de sucesso
+        Alert.alert(
+          "Erro no cadastro.",
+          "Ocorreu um erro ao fazer cadastro, tente novamente."
+        );
       }
-
-      // mostrando um alert de sucesso
-      Alert.alert(
-        "Erro no cadastro.",
-        "Ocorreu um erro ao fazer cadastro, tente novamente."
-      );
-    }
-  }, []);
+    },
+    [navigation]
+  );
 
   return (
     <>

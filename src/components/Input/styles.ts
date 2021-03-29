@@ -42,7 +42,7 @@ export const Icon = styled(Icons)`
 export const TextInput = styled.TextInput`
   flex: 1;
 
+  font-family: "RobotoSlab-Regular";
   color: #fff;
   font-size: 16px;
-  font-family: "RobotoSlab-Regular";
 `;

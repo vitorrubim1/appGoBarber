@@ -7,15 +7,19 @@ import { NavigationContainer } from "@react-navigation/native"; /*
   ele tem que estar por volta de tudo, pra que a navegação/rota funcione;
 */
 
+import AppProvider from "./hooks";
+
 import Routes from "./routes";
 
 const App: React.FC = () => {
   return (
     <NavigationContainer>
       <StatusBar barStyle="light-content" backgroundColor="#111111" />
-      <View style={{ flex: 1, backgroundColor: "#111111" }}>
-        <Routes />
-      </View>
+      <AppProvider>
+        <View style={{ flex: 1, backgroundColor: "#111111" }}>
+          <Routes />
+        </View>
+      </AppProvider>
     </NavigationContainer>
   );
 };

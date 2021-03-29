@@ -12,6 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 import * as Yup from "yup";
 
+import { useAuth } from "../../hooks/auth";
+
 import getValidationErrors from "../../utils/getValidationsErrors";
 import { Form } from "@unform/mobile";
 import { FormHandles } from "@unform/core"; // métodos disponíveis para manipular a referência do formulário de maneira direta
@@ -40,6 +42,8 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null); // para que ao prosseguir o input de email o de password tenha autofoco
 
+  const { signIn } = useAuth();
+
   const handleSignIn = useCallback(async (data: SignInFormData) => {
     try {
       formRef.current?.setErrors({}); // zerando os erros
@@ -55,8 +59,8 @@ const SignIn: React.FC = () => {
         abortEarly: false, // pra retornar todos os erros de uma vez
       }); // dados q recebi do input
 
-      // fazendo login e sendo redirecionado ao dashboard
-      // await signIn({ email: data.email, password: data.password });
+      // fazendo login
+      await signIn({ email: data.email, password: data.password });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         // verifico se o erro que deu é uma instância do Yup
