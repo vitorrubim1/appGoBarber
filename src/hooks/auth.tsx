@@ -14,6 +14,7 @@ interface AuthContextData {
   user: User;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
+  loading: boolean;
 }
 
 interface SignInCredentials {
@@ -30,6 +31,7 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>({} as AuthState);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // função assíncrona responsável por pegar os dados do "localStorage" e se caso tenha setar no state
@@ -43,6 +45,7 @@ const AuthProvider: React.FC = ({ children }) => {
         //token[1], user[1]: pq retorna chave e valor
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
+      setLoading(false); // como a função de loadStoragedData é assíncrona, tem alguns "flash" de refresh do app que mostrar a tela de login, e pra evitar, temos esse loading
     }
     loadStoragedData();
   }, []);
@@ -70,7 +73,7 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+    <AuthContext.Provider value={{ user: data.user, signIn, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,23 +1,23 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { View, ActivityIndicator } from "react-native";
 
-import SignIn from "../pages/SignIn";
-import SignUp from "../pages/SignUp";
+import { useAuth } from "../hooks/auth";
 
-const Auth = createStackNavigator(); // navegação somente para as telas de autenticação
+import AuthRoutes from "./auth.routes"; //rotas de autenticação, quando o user não está logado
+import AppRoutes from "./app.routes"; //quando o user já está logado
 
-const AuthRoutes: React.FC = () => (
-  <Auth.Navigator
-    screenOptions={{
-      // pra sumir com o header e estilizando cada uma das rotas
-      headerShown: false,
-      cardStyle: { backgroundColor: "#111111" },
-    }}
-  >
-    <Auth.Screen name="SignIn" component={SignIn} />
-    {/*nome único por rota*/}
-    <Auth.Screen name="SignUp" component={SignUp} />
-  </Auth.Navigator>
-);
+const Routes: React.FC = () => {
+  const { user, loading } = useAuth();
 
-export default AuthRoutes;
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#ff9000" />
+      </View>
+    );
+  }
+
+  return user ? <AppRoutes /> : <AuthRoutes />; //se o user tiver logado dashboard, se não telas de autenticação
+};
+
+export default Routes;

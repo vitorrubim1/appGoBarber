@@ -9,7 +9,7 @@ import { NavigationContainer } from "@react-navigation/native"; /*
 
 import AppProvider from "./hooks";
 
-import Routes from "./routes";
+import Routes from "./routes/";
 
 const App: React.FC = () => {
   return (
