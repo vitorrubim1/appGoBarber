@@ -7,7 +7,7 @@ export const Container = styled.View`
   align-items: center;
   justify-content: center;
 
-  padding: 0 30px ${Platform.OS === 'android' ? 147 : 40}px; // pra que nada fique encostando nas laterais e quando subir o teclado mostrar o botão
+  padding: 0 30px ${Platform.OS === 'android' ? 147 : 40}px; // Pra que nada fique encostando nas laterais e quando subir o teclado mostrar o botão
 `;
 
 export const Title = styled.Text`

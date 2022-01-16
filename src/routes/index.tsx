@@ -3,8 +3,8 @@ import { View, ActivityIndicator } from "react-native";
 
 import { useAuth } from "../hooks/auth";
 
-import AuthRoutes from "./auth.routes"; //rotas de autenticação, quando o user não está logado
-import AppRoutes from "./app.routes"; //quando o user já está logado
+import AuthRoutes from "./auth.routes";
+import AppRoutes from "./app.routes";
 
 const Routes: React.FC = () => {
   const { user, loading } = useAuth();
@@ -17,7 +17,7 @@ const Routes: React.FC = () => {
     );
   }
 
-  return user ? <AppRoutes /> : <AuthRoutes />; //se o user tiver logado dashboard, se não telas de autenticação
+  return user ? <AppRoutes /> : <AuthRoutes />;
 };
 
 export default Routes;

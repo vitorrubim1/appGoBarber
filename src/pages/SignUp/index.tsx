@@ -16,7 +16,7 @@ import api from "../../services/api";
 import getValidationErrors from "../../utils/getValidationsErrors";
 
 import { Form } from "@unform/mobile";
-import { FormHandles } from "@unform/core"; // métodos disponíveis para manipular a referência do formulário de maneira direta
+import { FormHandles } from "@unform/core";
 
 import Input from "../../components/Input";
 import Button from "../../components/Button";
@@ -46,21 +46,20 @@ const SignUp: React.FC = () => {
   const handleSignUp = useCallback(
     async (data: SignUpFormData) => {
       try {
-        formRef.current?.setErrors({}); // zerando os erros
+        formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
           name: Yup.string().required("Nome obrigatório"),
           email: Yup.string()
             .required("Email obrigatório")
             .email("Digite um email válido"),
-          password: Yup.string().min(6, "Mínimo 6 digitos "),
+          password: Yup.string().min(6, "Mínimo 6 dígitos "),
         });
 
         await schema.validate(data, {
-          abortEarly: false, // pra retornar todos os erros de uma vez
-        }); // dados q recebi do input
+          abortEarly: false,
+        });
 
-        // criando um user, redirecionando-o, e mostrando um alert
         await api.post("users", data);
         Alert.alert(
           "Cadastro realizado com sucesso!",
@@ -69,14 +68,12 @@ const SignUp: React.FC = () => {
         navigation.goBack();
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
-          // verifico se o erro que deu é uma instância do Yup
           const errors = getValidationErrors(error);
-          formRef.current?.setErrors(errors); // formRef: referencia do formulario. current: valor das informações
+          formRef.current?.setErrors(errors);
 
-          return; // para não executar o toast caso seja erro de validação
+          return;
         }
 
-        // mostrando um alert de sucesso
         Alert.alert(
           "Erro no cadastro.",
           "Ocorreu um erro ao fazer cadastro, tente novamente."
@@ -110,8 +107,8 @@ const SignUp: React.FC = () => {
               style={{ width: "100%" }}
             >
               <Input
-                autoCapitalize="words" // nomes próprios em letra maiuscula
-                returnKeyType="next" // pro teclado ter a opção visual de prosseguir pro outro input abaixo
+                autoCapitalize="words"
+                returnKeyType="next"
                 name="name"
                 icon="user"
                 placeholder="Digite seu nome"
@@ -123,7 +120,7 @@ const SignUp: React.FC = () => {
                 ref={emailInputRef}
                 autoCorrect={false}
                 autoCapitalize="none"
-                returnKeyType="next" // pro teclado ter a opção visual de prosseguir pro outro input abaixo
+                returnKeyType="next"
                 keyboardType="email-address"
                 name="email"
                 icon="mail"
@@ -134,24 +131,17 @@ const SignUp: React.FC = () => {
               />
               <Input
                 ref={passwordInputRef}
-                secureTextEntry //campo do tipo password
-                textContentType="newPassword" //para não tentar gerar uma senha automática no ios
-                returnKeyType="send" //pro teclado ter a opção visual de "submitar"
+                secureTextEntry
+                textContentType="newPassword" //Para não tentar gerar uma senha automática no ios
+                returnKeyType="send"
                 name="password"
                 icon="lock"
                 placeholder="Digite sua senha"
-                onSubmitEditing={() => {
-                  // pra submitar de fato o form
-                  formRef.current?.submitForm();
-                }}
+                onSubmitEditing={() => formRef.current?.submitForm()}
               />
             </Form>
 
-            <Button
-              onPress={() => {
-                formRef.current?.submitForm(); /*não tem como por type submit, então tenho que disparar com a o submit com a referência do formulário*/
-              }}
-            >
+            <Button onPress={() => formRef.current?.submitForm()}>
               Entrar
             </Button>
           </Container>

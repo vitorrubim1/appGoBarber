@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from "react";
 import AsyncStorage from "@react-native-community/async-storage";
+
 import api from "../services/api";
 
 import User from "../dtos/IUser";
@@ -34,7 +35,6 @@ const AuthProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // função assíncrona responsável por pegar os dados do "localStorage" e se caso tenha setar no state
     async function loadStoragedData(): Promise<void> {
       const [token, user] = await AsyncStorage.multiGet([
         "@GoBarber:token",
@@ -42,22 +42,19 @@ const AuthProvider: React.FC = ({ children }) => {
       ]);
 
       if (token[1] && user[1]) {
-        //token[1], user[1]: pq retorna chave e valor
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
-      setLoading(false); // como a função de loadStoragedData é assíncrona, tem alguns "flash" de refresh do app que mostrar a tela de login, e pra evitar, temos esse loading
+      setLoading(false);
     }
     loadStoragedData();
   }, []);
 
-  // função de login/autenticação
   const signIn = useCallback(async ({ email, password }: SignInCredentials) => {
     const response = await api.post("sessions", { email, password });
 
-    const { userData: user, token } = response.data; // desacoplando informações que vem da api
+    const { userData: user, token } = response.data;
 
     await AsyncStorage.multiSet([
-      // setando os dados como um array
       ["@GoBarber:token", token],
       ["@GoBarber:user", JSON.stringify(user)],
     ]);
@@ -65,9 +62,8 @@ const AuthProvider: React.FC = ({ children }) => {
     setData({ token, user });
   }, []);
 
-  // função para deslogar o usuário
   const signOut = useCallback(async () => {
-    await AsyncStorage.multiRemove(["@GoBarber:token", "@GoBarber:user"]); // array das keys que quero remover
+    await AsyncStorage.multiRemove(["@GoBarber:token", "@GoBarber:user"]);
 
     setData({} as AuthState);
   }, []);
@@ -80,13 +76,9 @@ const AuthProvider: React.FC = ({ children }) => {
 };
 
 function useAuth(): AuthContextData {
-  // pra não precisar importar o useContext toda vez, e passar o AuthContext
   const context = useContext(AuthContext);
 
-  if (!context) {
-    // se o contexto não tiver englobando as páginas vai retorna esse erro
-    throw new Error("useAuth must be used within an authProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an authProvider");
 
   return context;
 }

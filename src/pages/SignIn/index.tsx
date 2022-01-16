@@ -16,7 +16,7 @@ import { useAuth } from "../../hooks/auth";
 
 import getValidationErrors from "../../utils/getValidationsErrors";
 import { Form } from "@unform/mobile";
-import { FormHandles } from "@unform/core"; // métodos disponíveis para manipular a referência do formulário de maneira direta
+import { FormHandles } from "@unform/core";
 
 import Input from "../../components/Input";
 import Button from "../../components/Button";
@@ -40,13 +40,13 @@ interface SignInFormData {
 const SignIn: React.FC = () => {
   const navigation = useNavigation();
   const formRef = useRef<FormHandles>(null);
-  const passwordInputRef = useRef<TextInput>(null); // para que ao prosseguir o input de email o de password tenha autofoco
+  const passwordInputRef = useRef<TextInput>(null);
 
   const { signIn } = useAuth();
 
   const handleSignIn = useCallback(async (data: SignInFormData) => {
     try {
-      formRef.current?.setErrors({}); // zerando os erros
+      formRef.current?.setErrors({});
 
       const schema = Yup.object().shape({
         email: Yup.string()
@@ -56,21 +56,18 @@ const SignIn: React.FC = () => {
       });
 
       await schema.validate(data, {
-        abortEarly: false, // pra retornar todos os erros de uma vez
-      }); // dados q recebi do input
+        abortEarly: false, // Pra retornar todos os erros de uma vez
+      });
 
-      // fazendo login
       await signIn({ email: data.email, password: data.password });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        // verifico se o erro que deu é uma instância do Yup
         const errors = getValidationErrors(error);
-        formRef.current?.setErrors(errors); // formRef: referencia do formulario. current: valor das informações
+        formRef.current?.setErrors(errors);
 
-        return; // para não executar o toast caso seja erro de validação
+        return;
       }
 
-      // disparar um alerta
       Alert.alert(
         "Erro na autenticação",
         "Ocorreu um erro ao fazer login, verifique as credenciais"
@@ -108,29 +105,20 @@ const SignIn: React.FC = () => {
                 name="email"
                 icon="mail"
                 placeholder="Digite seu email"
-                returnKeyType="next" // pro teclado ter a opção visual de prosseguir pro outro input abaixo
-                onSubmitEditing={() => {
-                  passwordInputRef.current?.focus(); //para do foco no input de senha
-                }}
+                returnKeyType="next" // Pro teclado ter a opção visual de prosseguir pro outro input abaixo
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
               />
               <Input
                 ref={passwordInputRef}
                 name="password"
                 icon="lock"
                 placeholder="Digite sua senha"
-                secureTextEntry //campo do tipo password
-                returnKeyType="send" //pro teclado ter a opção visual de "submitar"
-                onSubmitEditing={() => {
-                  // pra submitar de fato o form
-                  formRef.current?.submitForm();
-                }}
+                secureTextEntry //Campo do tipo password
+                returnKeyType="send"
+                onSubmitEditing={() => formRef.current?.submitForm()}
               />
 
-              <Button
-                onPress={() => {
-                  formRef.current?.submitForm(); /*não tem como por type submit, então tenho que disparar com a o submit com a referência do formulário*/
-                }}
-              >
+              <Button onPress={() => formRef.current?.submitForm()}>
                 Entrar
               </Button>
             </Form>

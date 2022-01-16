@@ -24,46 +24,45 @@ interface InputRef {
   focus(): void;
 }
 
+// ForwardRefRenderFunction: quando preciso receber "ref", como parâmetro, já que a tipagem sempre sera "any" com React.FC
 const Input: React.ForwardRefRenderFunction<InputRef, InputProps> = (
   { name, icon, ...rest },
   ref
 ) => {
-  // ForwardRefRenderFunction: quando preciso receber "ref", como parametro, já que a tipagem sempre sera "any" com React.FC
   const inputElementRef = useRef<any>(null);
 
-  const { defaultValue = "", registerField, fieldName, error } = useField(name); //name dos parâmetros é o que vem do componente que usa o input, da interface InputProps
-  const inputValueRef = useRef<InputValueReference>({ value: defaultValue }); // que vai ser vazio por início
+  const { defaultValue = "", registerField, fieldName, error } = useField(name);
+  const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
 
-  const [isFocused, setIsfocused] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
 
   const handleInputFocus = useCallback(() => {
-    setIsfocused(true);
+    setIsFocused(true);
   }, []);
 
   const handleInputBlur = useCallback(() => {
-    setIsfocused(false);
+    setIsFocused(false);
 
-    setIsFilled(!!inputValueRef.current.value); // vendo se o input tem algum valor preenchido, se tiver true, se não false
+    setIsFilled(!!inputValueRef.current.value);
   }, []);
 
+  // Primeiro parâmetro é oq eu recebo do componente filho, e a segunda é oq quero fazer
   useImperativeHandle(ref, () => ({
     focus() {
-      // primeiro parâmetro é oq eu recebo do componente filho, e a segunda é oq quero fazer
-      inputElementRef.current.focus(); // pego a referência padrão desse componente e do foco
+      inputElementRef.current.focus();
     },
   }));
 
   useEffect(() => {
     registerField({
-      // registrando o input no unform
       name: fieldName,
       ref: inputValueRef.current,
-      path: "value", // aonde irá encontrar o valor do input em si
+      path: "value",
 
       setValue(ref: any, value: string) {
         inputValueRef.current.value = value;
-        inputElementRef.current.setNativeProps({ text: value }); // para que o input reflita a cada alteração
+        inputElementRef.current.setNativeProps({ text: value }); // Para que o input reflita a cada alteração
       },
       clearValue() {
         inputValueRef.current.value = "";
@@ -88,7 +87,7 @@ const Input: React.ForwardRefRenderFunction<InputRef, InputProps> = (
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         onChangeText={(value) => {
-          inputValueRef.current.value = value; /*o texto que estiver sendo digitado no input, será a informação final do inputValueRef.value*/
+          inputValueRef.current.value = value; /*O texto que estiver sendo digitado no input, será a informação final do inputValueRef.value*/
         }}
         {...rest}
       />
@@ -96,4 +95,4 @@ const Input: React.ForwardRefRenderFunction<InputRef, InputProps> = (
   );
 };
 
-export default forwardRef(Input); //como recebo ref por parâmetro, tenho q exportar assim;
+export default forwardRef(Input); //Como recebo ref por parâmetro, tenho q exportar assim;
